@@ -7,4 +7,4 @@ Ensure Flask is installed, and then run main.py. Will only work with database fr
 Automate deployment.
 Move to hosted database.
 
-![Current Map](https://imgur.com/a/uu7prJ0)
+![Current Map Displaying Tube Lines](https://i.imgur.com/ONRY97X.png)
