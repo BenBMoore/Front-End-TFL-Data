@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+    <title>GeoJSON + Flask + MongoDB</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet-src.js"></script>
+</head>
+<body>
+    <h1>
+        Let's display some nice maps here!
+    </h1>
+<div id="map" style="height: 80vh;"></div>
+
+<script>
+
+var map = L.map('map').setView([51.505, -0.09], 13)
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+        map.panTo(L.latLng(position.coords.latitude, position.coords.longitude))
+    })
+}
+L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Open street map'
+}).addTo(map)
+
+var lineLayer = L.layerGroup().addTo(map);
+const url = 'http://127.0.0.1:5000/geojson-features'
+
+fetch(url).then(function(response) {
+    response = response.json()
+    return response
+    })
+    .then(function(data) {
+        data.forEach(function (item, index) {
+            console.log(item)
+            L.geoJSON(item,{color:item.properties.color}).addTo(map)
+        });
+    });
+
+</script>
+
+</body>
+</html>
