@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify
 import json
-import sqlite3
+from pymongo import MongoClient
 import ast
 
 app = Flask(__name__)
@@ -11,14 +11,14 @@ def get_all_points():
     colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
                "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
                "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
-    conn = sqlite3.connect('C:\\Users\\bluer\\Documents\\Dev\\tfl-open-data\\example.db')
-    c = conn.cursor()
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client["train-database"]
     features = []
 
 
-    for row in c.execute('SELECT id, line_coords FROM lines'):
-        coords = ast.literal_eval(row[1])
-        line_colour = colours[row[0]] if row[0] in colours else "#CCCCC"
+    for row in db.line_collection.find():
+        coords = row['lineStrings']
+        line_colour = colours[row["line_id"]] if row["line_id"] in colours else "#CCCCC"
         for x in coords:
             x = ast.literal_eval(x)
             for y in x:
@@ -42,20 +42,45 @@ def get_all_stations():
     colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
                "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
                "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
-    conn = sqlite3.connect('C:\\Users\\bluer\\Documents\\Dev\\tfl-open-data\\example.db')
-    c = conn.cursor()
     features = []
 
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client["train-database"]
 
-    for row in c.execute('SELECT name, station_coords, line_name FROM stations').fetchall():
+    for row in db.station_collection.find():
         features.append({
             "type": "feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": ast.literal_eval(row[1])
+                "coordinates": row["coords"]
             },
             "properties": {
-                "description": row[0]
+                "description": row["name"]
+            }
+        })
+    body = json.dumps(features)
+    header = json.loads('{ "type": "FeatureCollection","features":' + body + '}')
+    return header
+
+@app.route('/tube-trains', methods=['GET'])
+def get_trains():
+    colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
+               "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
+               "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
+    features = []
+
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client["train-database"]
+
+    for train in db.train_collection.find():
+        features.append({
+            "type": "feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": train["currentLocation"]
+            },
+            "properties": {
+                "description": train["id"] + "<br>" + train["currentLocationText"] + "<br>" + train["prevStation"] +"<br>" + train["nextStation"],
             }
         })
     body = json.dumps(features)
