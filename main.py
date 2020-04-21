@@ -80,7 +80,13 @@ def get_trains():
                 "coordinates": train["currentLocation"]
             },
             "properties": {
-                "description": train["id"] + "<br>" + train["currentLocationText"] + "<br>" + train["prevStation"] +"<br>" + train["nextStation"],
+                "title":train["id"],
+                "description": train["currentLocationText"] + "<br>" + train["prevStation"] +"<br>" + train["nextStation"],
+                "endLocation": train["nextStationCoords"],
+                "timeToArrival":train["timeToStation"],
+                "timeStamp":train["timestamp"],
+                "route":train["route"],
+            
             }
         })
     body = json.dumps(features)
