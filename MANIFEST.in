@@ -1,0 +1,3 @@
+graft tube_frontend/static
+graft tube_frontend/templates
+global-exclude *.pyc

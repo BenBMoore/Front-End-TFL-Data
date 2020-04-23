@@ -2,20 +2,21 @@
 var map = new mapboxgl.Map({
   container: 'map',
   style: "https://api.maptiler.com/maps/6c5b0dc0-4399-4516-824d-236ab6058258/style.json?key=EZK0qr5GcGShEW6ZFEBA",
-  zoom: 10,
+  zoom: 11,
   center: [
     -0.088899,
     51.513356
   ]
 });
+map.addControl(new mapboxgl.NavigationControl());
 map.loadImage("/static/underground.png", function (error, image) {
   if (error) throw error;
   map.addImage("custom-marker", image);
 });
 
-var lines_url = 'http://127.0.0.1:5000/tube-lines';
-var stations_url = 'http://127.0.0.1:5000/tube-stations'
-var trains_url = 'http://127.0.0.1:5000/tube-trains'
+var lines_url = '/tube-lines';
+var stations_url = '/tube-stations'
+var trains_url = '/tube-trains'
 
 map.on('load', function () {
   /* Style layer: A style layer ties together the source and image and specifies how they are displayed on the map. */
@@ -26,7 +27,7 @@ map.on('load', function () {
     'type': 'line',
     'source': 'tubeLines',
     'paint': {
-      'line-width': 2,
+      'line-width': 3,
       'line-color': ['get', 'color']
     }
   });
@@ -37,7 +38,7 @@ map.on('load', function () {
     'type': 'circle',
     'source': 'tubeStations',
     'paint': {
-      'circle-radius': 2,
+      'circle-radius': 4,
       'circle-color': "#FFFFFF"
     }
 
@@ -124,7 +125,7 @@ function pull_latest_train_info() {
 function animateMarker() {
   markersArray.forEach(function (train, index, object) {
     // Check if it's an old train with no more updates
-    if (Date.now() - (100 * 1000) > train.timeStamp) {
+    if (Date.now() - (300 * 1000) > train.timeStamp) {
       train.trainObj.remove()
       object.splice(index, 1);
     }

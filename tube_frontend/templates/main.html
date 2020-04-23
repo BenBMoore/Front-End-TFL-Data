@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Live(ish) Tube Train Map</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+	<link href="/static/style.css" rel="stylesheet" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.4.2/dist/css/uikit.min.css" />
+	<script src="https://cdn.jsdelivr.net/npm/uikit@3.4.2/dist/js/uikit-icons.min.js"></script>
+
+</head>
+
+<body>
+	<div class="container uk-background-muted">
+		<div class="header uk-text-lead uk-margin-small	uk-margin-small-left">Welcome to the live map of tube trains in London.</div>
+		<div class="content">
+			<div class="map_box_container">
+				<!--MAP-->
+				<div id='map'></div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+<script src='/static/trains.js'></script>
+
+</html>

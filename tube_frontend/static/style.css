@@ -1,0 +1,53 @@
+.map_box_container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.marker {
+  background-image: url('/static/icon.png');
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mapboxgl-popup {
+  max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+}
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+}
+.content {
+  position: fixed;
+  top: 50px;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}

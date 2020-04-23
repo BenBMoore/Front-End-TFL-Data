@@ -1,20 +1,25 @@
-from flask import Flask, render_template, jsonify
-import json
+import functools
 from pymongo import MongoClient
 import ast
+import json
 
-app = Flask(__name__)
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
+)
+from werkzeug.security import check_password_hash, generate_password_hash
 
+from tube_frontend.db import get_db, close_db
 
-@app.route('/tube-lines', methods=['GET'])
+bp = Blueprint('tube-lines', __name__,)
+
+@bp.route('/tube-lines', methods=['GET'])
 def get_all_points():
     colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
                "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
                "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
-    client = MongoClient('mongodb://localhost:27017/')
+    client = get_db()
     db = client["train-database"]
     features = []
-
 
     for row in db.line_collection.find():
         coords = row['lineStrings']
@@ -32,19 +37,19 @@ def get_all_points():
                         "color": line_colour
                     }
                 })
+    close_db(client)
     body = json.dumps(features)
     header = json.loads('{ "type": "FeatureCollection","features":' + body + '}')
-    return header
+    return header, 200
 
-
-@app.route('/tube-stations', methods=['GET'])
+@bp.route('/tube-stations', methods=['GET'])
 def get_all_stations():
     colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
                "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
                "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
     features = []
 
-    client = MongoClient('mongodb://localhost:27017/')
+    client = get_db()
     db = client["train-database"]
 
     for row in db.station_collection.find():
@@ -59,17 +64,18 @@ def get_all_stations():
             }
         })
     body = json.dumps(features)
+    close_db(client)
     header = json.loads('{ "type": "FeatureCollection","features":' + body + '}')
-    return header
+    return header, 200
 
-@app.route('/tube-trains', methods=['GET'])
+@bp.route('/tube-trains', methods=['GET'])
 def get_trains():
     colours = {'northern': "#000000", "central": "#CC3333", "bakerloo": "#996633", "circle": "#FFCC00",
                "district": "#006633", "hammersmith-city": "#CC9999", "jubilee": "#868F98", "metropolitan": "#660066",
                "piccadilly": "#0019A8", "victoria": "#0099CC", "waterloo-city": "#66CCCC"}
     features = []
 
-    client = MongoClient('mongodb://localhost:27017/')
+    client = get_db()
     db = client["train-database"]
 
     for train in db.train_collection.find():
@@ -90,12 +96,6 @@ def get_trains():
             }
         })
     body = json.dumps(features)
+    close_db(client)
     header = json.loads('{ "type": "FeatureCollection","features":' + body + '}')
-    return header
-
-@app.route('/')
-def main():
-    return render_template('main.html')
-
-
-app.run(debug=True)
+    return header,200
